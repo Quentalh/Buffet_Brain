@@ -1,0 +1,23 @@
+{
+    "joao@teste.com": {
+        "nome": "João Conservador",
+        "senha": "123",
+        "renda_atual": 4000,
+        "poupanca_atual": 0.1,
+        "perfil_classificado_pela_ia": "Conservador"
+    },
+    "maria@teste.com": {
+        "nome": "Maria Moderada",
+        "senha": "123",
+        "renda_atual": 8000,
+        "poupanca_atual": 0.2,
+        "perfil_classificado_pela_ia": "Moderado"
+    },
+    "carlos@teste.com": {
+        "nome": "Carlos Audacioso",
+        "senha": "123",
+        "renda_atual": 15000,
+        "poupanca_atual": 0.35,
+        "perfil_classificado_pela_ia": "Audacioso"
+    }
+}
