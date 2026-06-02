@@ -3,7 +3,6 @@ import torch.nn as nn
 import numpy as np
 import json
 
-# 1. Recriar a Rede (para poder carregar os pesos)
 class Guia_LSTM(nn.Module):
     def __init__(self, input_size, hidden_size, num_classes):
         super(Guia_LSTM, self).__init__()
@@ -15,7 +14,6 @@ class Guia_LSTM(nn.Module):
 
 print("A iniciar o Processamento em Lote (Batch) da IA...")
 
-# 2. Carregar o Cérebro
 checkpoint = torch.load('lstm_guide.pth', map_location=torch.device('cpu'))
 modelo = Guia_LSTM(5, checkpoint['hidden_size'], 3)
 modelo.load_state_dict(checkpoint['model_state_dict'])
@@ -25,8 +23,6 @@ X_mean = checkpoint['X_mean'].numpy()
 X_std = checkpoint['X_std'].numpy()
 mapeamento = checkpoint['mapeamento_reverso']
 
-# 3. Criar os nossos 3 Clientes Artificiais (com históricos diferentes)
-# Formato do histórico: [idade, renda, poupanca, conhecimento, risco] ao longo de 4 anos
 clientes_artificiais = [
     {
         "nome": "João Conservador", "email": "joao@teste.com", "senha": "123",
@@ -51,7 +47,6 @@ clientes_artificiais = [
     }
 ]
 
-# 4. Passar todos pela LSTM e guardar no Banco
 banco_de_dados = {}
 
 with torch.no_grad():
@@ -64,16 +59,14 @@ with torch.no_grad():
         _, predicted = torch.max(output.data, 1)
         perfil_ia = mapeamento[predicted.item()]
         
-        # Gravar no "Banco de Dados" usando o email como chave
         banco_de_dados[cliente['email']] = {
             "nome": cliente['nome'],
-            "senha": cliente['senha'], # Na vida real seria criptografada!
+            "senha": cliente['senha'],
             "renda_atual": cliente['renda_atual'],
             "poupanca_atual": cliente['poupanca_atual'],
             "perfil_classificado_pela_ia": perfil_ia
         }
 
-# Guardar ficheiro JSON
 with open('usuarios.json', 'w', encoding='utf-8') as f:
     json.dump(banco_de_dados, f, ensure_ascii=False, indent=4)
 
