@@ -3,62 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buffet Brain | Área do Cliente</title>
+    <title>Buffet Brain | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+<body class="bg-gray-100 min-h-screen text-slate-800">
 
-    <div class="max-w-4xl w-full bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
-        
-        <div class="w-full md:w-1/3 p-8 bg-slate-900 text-white flex flex-col justify-center">
-            <h2 class="text-3xl font-bold mb-2">Acesso Restrito</h2>
-            <p class="text-slate-400 mb-8 text-sm">O seu perfil já foi analisado pela nossa Inteligência Artificial.</p>
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-slate-900 rounded-xl shadow-2xl p-8 text-white">
+            <h2 class="text-3xl font-bold mb-2 text-center text-blue-500">Buffet Brain</h2>
+            <p class="text-slate-400 mb-8 text-sm text-center">Inteligência Artificial Quantitativa</p>
             
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium">E-mail</label>
-                    <input type="email" id="email" value="carlos@teste.com" class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-700 focus:ring-2 focus:ring-blue-500 text-white outline-none" required>
+                    <label class="block text-sm font-medium">E-mail Corporativo</label>
+                    <input type="email" id="email" value="carlos@teste.com" class="w-full mt-1 p-3 rounded bg-slate-800 border border-slate-700 text-white outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium">Senha</label>
-                    <input type="password" id="senha" value="123" class="w-full mt-1 p-2 rounded bg-slate-800 border border-slate-700 focus:ring-2 focus:ring-blue-500 text-white outline-none" required>
+                    <input type="password" id="senha" value="123" class="w-full mt-1 p-3 rounded bg-slate-800 border border-slate-700 text-white outline-none focus:border-blue-500">
                 </div>
-                <button type="submit" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded transition duration-200">
-                    Entrar na Conta
+                <button type="submit" id="btnAcesso" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded transition shadow-lg shadow-blue-500/30">
+                    Acessar Plataforma
                 </button>
             </form>
-
-            <div class="mt-8 text-xs text-slate-500">
-                <p>Contas de teste:</p>
-                <ul class="mt-2 space-y-1">
-                    <li>joao@teste.com / 123</li>
-                    <li>maria@teste.com / 123</li>
-                    <li>carlos@teste.com / 123</li>
-                </ul>
-            </div>
         </div>
+    </div>
 
-        <div class="w-full md:w-2/3 p-8 bg-gray-50 flex flex-col justify-center relative min-h-[400px]">
+    <div id="dashboardPage" class="hidden min-h-screen p-6 max-w-6xl mx-auto">
+        
+        <header class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm mb-6 border border-slate-200">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900">Dashboard</h1>
+                <p class="text-sm text-slate-500">Bem-vindo, <span id="nomeCliente" class="font-bold text-blue-600"></span></p>
+            </div>
+            <button onclick="fazerLogout()" class="text-sm font-bold text-red-500 hover:text-red-700 transition">
+                Sair / Logout
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
-            <div id="estadoInicial" class="text-center text-gray-400">
-                <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                <p>Faça login para aceder à sua carteira ao vivo.</p>
-            </div>
-
-            <div id="loader" class="hidden text-center text-blue-600 font-bold animate-pulse">
-                Autenticando e a buscar cotações na B3...
-            </div>
-
-            <div id="resultadoDashboard" class="hidden">
-                <div class="mb-4">
-                    <h3 class="text-2xl font-extrabold text-gray-900 mt-1">Bem-vindo, <span id="nomeCliente" class="text-blue-600"></span></h3>
-                    <p class="text-gray-600 text-sm mt-1">A nossa IA analisou o seu histórico de 4 anos e classificou-o como <strong id="perfilCliente" class="uppercase"></strong>.</p>
-                    <p class="inline-block mt-3 px-3 py-1 bg-green-100 text-green-800 rounded-full font-bold text-sm">
-                        💰 Aporte Calculado Hoje: R$ <span id="valorInvestido"></span>
-                    </p>
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-lg mb-1">Dados Lidos pela Rede Neural</h3>
+                    <p class="text-xs text-slate-500 mb-4">Evolução do seu comportamento financeiro nos últimos 4 anos.</p>
+                    <div class="h-48 w-full">
+                        <canvas id="graficoEvolucao"></canvas>
+                    </div>
                 </div>
-                
-                <div class="space-y-3 mt-6" id="listaAlocacao">
+
+                <div class="bg-slate-900 p-6 rounded-xl shadow-lg border border-slate-700 text-white">
+                    <h3 class="font-bold text-lg mb-1 text-purple-400">⚡ Simulador da LSTM (Ao Vivo)</h3>
+                    <p class="text-xs text-slate-400 mb-4">Os seus dados atuais foram injetados abaixo. Altere-os para testar como a Inteligência Artificial muda de opinião.</p>
+                    
+                    <form id="formIA" class="space-y-3">
+                        <div class="grid grid-cols-4 gap-2 text-[10px] text-center text-slate-400 font-bold mb-1 uppercase tracking-wider">
+                            <div>Ano 1</div><div>Ano 2</div><div>Ano 3</div><div>Ano 4</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="number" id="r1" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700" title="Renda">
+                            <input type="number" id="r2" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700">
+                            <input type="number" id="r3" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700">
+                            <input type="number" id="r4" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700">
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="number" id="p1" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400" title="Poupança">
+                            <input type="number" id="p2" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400">
+                            <input type="number" id="p3" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400">
+                            <input type="number" id="p4" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400">
+                        </div>
+                        <button type="submit" class="w-full mt-2 bg-purple-600 hover:bg-purple-500 font-bold py-2 rounded text-sm transition">Re-processar Tensor Neural</button>
+                    </form>
+
+                    <div class="mt-6 pt-4 border-t border-slate-700">
+                        <h4 class="text-xs font-bold text-slate-400 mb-3">CONFIANÇA MATEMÁTICA (Softmax):</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-[10px] mb-1"><span>Audacioso</span><span id="pctAudacioso" class="font-bold">0%</span></div>
+                                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="barAudacioso" class="bg-red-500 h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[10px] mb-1"><span>Moderado</span><span id="pctModerado" class="font-bold">0%</span></div>
+                                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="barModerado" class="bg-yellow-500 h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[10px] mb-1"><span>Conservador</span><span id="pctConservador" class="font-bold">0%</span></div>
+                                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="barConservador" class="bg-blue-500 h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="font-bold text-lg mb-1">Portfólio Quantitativo</h3>
+                        <p class="text-xs text-slate-500">Varredura na B3 alinhada ao seu perfil: <strong id="perfilCliente" class="uppercase text-blue-600"></strong></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] uppercase font-bold text-slate-400">Capital Alocado</p>
+                        <p class="text-xl font-black text-green-600">R$ <span id="valorInvestido"></span></p>
+                    </div>
+                </div>
+
+                <div id="listaAlocacao" class="space-y-3">
                     </div>
             </div>
 
@@ -66,12 +116,13 @@
     </div>
 
     <script>
+        let meuGrafico = null; 
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); 
-            
-            document.getElementById('estadoInicial').classList.add('hidden');
-            document.getElementById('resultadoDashboard').classList.add('hidden');
-            document.getElementById('loader').classList.remove('hidden');
+            e.preventDefault();
+            const btn = document.getElementById('btnAcesso');
+            btn.innerText = "Autenticando & Extraindo Dados...";
+            btn.disabled = true;
 
             const payload = {
                 email: document.getElementById('email').value,
@@ -88,48 +139,134 @@
                 const dados = await resposta.json();
 
                 if(dados.status === 'sucesso') {
-                    // Preencher dados do Cliente
-                    document.getElementById('nomeCliente').innerText = dados.dados_cliente.nome.split(' ')[0];
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('dashboardPage').classList.remove('hidden');
+                    document.getElementById('nomeCliente').innerText = dados.dados_cliente.nome;
                     document.getElementById('perfilCliente').innerText = dados.dados_cliente.perfil_ia;
                     document.getElementById('valorInvestido').innerText = dados.guia_de_investimento.capital_investido.toFixed(2);
 
-                    // Lista de compras
+                    const historico = dados.dados_cliente.historico;
+
+                    desenharGrafico(historico);
+
+                    for(let i=0; i<4; i++) {
+                        document.getElementById(`r${i+1}`).value = historico[i][0];
+                        document.getElementById(`p${i+1}`).value = historico[i][1];
+                    }
+
                     const lista = document.getElementById('listaAlocacao');
                     lista.innerHTML = ''; 
 
                     dados.guia_de_investimento.alocacao.forEach(item => {
-                        const tickerLimpo = item.ativo;
-                        const linkGoogleFinance = `https://www.google.com/finance/quote/${tickerLimpo}:BVMF`;
-
                         lista.innerHTML += `
-                            <div class="flex items-center justify-between bg-white p-3 rounded-lg shadow border border-l-4 border-l-blue-600">
+                            <div class="flex items-center justify-between bg-slate-50 p-4 rounded-lg border border-slate-200 border-l-4 border-l-blue-600 hover:shadow-md transition">
                                 <div class="flex-1 pr-4">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="bg-slate-800 text-white text-[10px] font-bold px-2 py-0.5 rounded">${tickerLimpo}</span>
+                                        <span class="bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded">${item.ativo}</span>
                                         <span class="text-[10px] font-semibold text-slate-500 uppercase">${item.categoria}</span>
                                     </div>
-                                    <h4 class="font-bold text-gray-800 text-sm">${item.nome}</h4>
-                                    <p class="text-xs text-gray-500 mt-1">${item.motivo}</p>
+                                    <p class="text-xs text-slate-600 mt-2 mb-2 leading-relaxed">${item.motivo}</p>
+                                    <a href="${item.link}" target="_blank" class="text-blue-600 hover:text-blue-800 text-[11px] font-semibold underline transition">
+                                        Auditar dados no StatusInvest ↗
+                                    </a>
                                 </div>
-                                <div class="text-right ml-2 bg-slate-50 p-2 rounded border border-slate-200">
-                                    <div class="text-lg font-black text-blue-700">${item.quantidade} <span class="text-xs">cotas</span></div>
-                                    <div class="text-xs font-bold text-slate-800">R$ ${item.total_gasto.toFixed(2)}</div>
+                                <div class="text-right ml-2 bg-white p-3 rounded shadow-sm border border-slate-100">
+                                    <div class="text-xl font-black text-slate-800">${item.quantidade} <span class="text-xs text-slate-400 font-normal">cotas</span></div>
+                                    <div class="text-xs font-bold text-green-600 mt-1">R$ ${item.total_gasto.toFixed(2)}</div>
                                 </div>
                             </div>
                         `;
                     });
 
-                    document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('resultadoDashboard').classList.remove('hidden');
+                    document.getElementById('formIA').dispatchEvent(new Event('submit'));
+
                 } else {
                     alert(dados.mensagem);
-                    document.getElementById('loader').classList.add('hidden');
-                    document.getElementById('estadoInicial').classList.remove('hidden');
                 }
             } catch (error) {
-                alert("Erro ao conectar ao servidor.");
+                alert("Erro técnico (FrontEnd): " + error.message);
+                console.error("Stack trace completo do Erro:", error);
+            } finally {
+                btn.innerText = "Acessar Plataforma";
+                btn.disabled = false;
             }
         });
+
+        document.getElementById('formIA').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const matrizTemporal = [
+                [parseFloat(document.getElementById('r1').value), parseFloat(document.getElementById('p1').value)],
+                [parseFloat(document.getElementById('r2').value), parseFloat(document.getElementById('p2').value)],
+                [parseFloat(document.getElementById('r3').value), parseFloat(document.getElementById('p3').value)],
+                [parseFloat(document.getElementById('r4').value), parseFloat(document.getElementById('p4').value)]
+            ];
+
+            try {
+                const resposta = await fetch('/api/simular_ia', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ historico_4_anos: matrizTemporal })
+                });
+                const dados = await resposta.json();
+
+                if(dados.status === 'sucesso') {
+                    ['Audacioso', 'Moderado', 'Conservador'].forEach(perfil => {
+                        document.getElementById(`bar${perfil}`).style.width = dados.confianca_da_rede[perfil] + '%';
+                        document.getElementById(`pct${perfil}`).innerText = dados.confianca_da_rede[perfil] + '%';
+                    });
+                }
+            } catch (error) {
+                console.error("Erro na inferência ao vivo", error);
+            }
+        });
+
+        function desenharGrafico(historico) {
+            const ctx = document.getElementById('graficoEvolucao').getContext('2d');
+            
+            if(meuGrafico) meuGrafico.destroy();
+
+            const rendas = historico.map(ano => ano[0]);
+            const poupancas = historico.map(ano => ano[1]);
+
+            meuGrafico = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'],
+                    datasets: [
+                        {
+                            label: 'Renda Acumulada',
+                            data: rendas,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Poupança Salva',
+                            data: poupancas,
+                            borderColor: '#22c55e', 
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 10} } } },
+                    scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function fazerLogout() {
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('senha').value = '';
+            document.getElementById('listaAlocacao').innerHTML = '';
+        }
     </script>
 </body>
 </html>
