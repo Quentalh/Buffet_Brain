@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buffet Brain | Dashboard</title>
+    <title>Buffet Brain | Sistema de Alocação</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen text-slate-800">
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
     <div id="loginPage" class="min-h-screen flex items-center justify-center p-6">
         <div class="max-w-md w-full bg-slate-900 rounded-xl shadow-2xl p-8 text-white">
@@ -23,241 +23,233 @@
                     <label class="block text-sm font-medium">Senha</label>
                     <input type="password" id="senha" value="123" class="w-full mt-1 p-3 rounded bg-slate-800 border border-slate-700 text-white outline-none focus:border-blue-500">
                 </div>
-                <button type="submit" id="btnAcesso" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded transition shadow-lg shadow-blue-500/30">
-                    Acessar Plataforma
+                <button type="button" onclick="fazerLogin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded transition-colors mt-4">
+                    Acessar Plataforma Neural
                 </button>
             </form>
         </div>
     </div>
 
-    <div id="dashboardPage" class="hidden min-h-screen p-6 max-w-6xl mx-auto">
+    <div id="dashboardPage" class="hidden min-h-screen p-6 max-w-7xl mx-auto">
         
-        <header class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm mb-6 border border-slate-200">
+        <header class="flex flex-col md:flex-row items-center justify-between bg-white p-6 rounded-xl shadow-sm mb-6 border-l-4 border-blue-500">
             <div>
-                <h1 class="text-2xl font-black text-slate-900">Dashboard</h1>
-                <p class="text-sm text-slate-500">Bem-vindo, <span id="nomeCliente" class="font-bold text-blue-600"></span></p>
+                <h1 class="text-2xl font-bold text-slate-800">Visão Geral do Investidor</h1>
+                <p class="text-slate-500 text-sm">Bem-vindo(a), <span id="nomeCliente" class="font-semibold text-slate-700"></span></p>
             </div>
-            <button onclick="fazerLogout()" class="text-sm font-bold text-red-500 hover:text-red-700 transition">
-                Sair / Logout
-            </button>
+            <div class="mt-4 md:mt-0 flex items-center gap-6">
+                <div class="text-right">
+                    <p class="text-xs text-slate-400 uppercase tracking-wider font-bold">Classificação da Rede Neural</p>
+                    <p id="perfilIA" class="text-xl font-black text-blue-600 uppercase"></p>
+                </div>
+                <button onclick="fazerLogout()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded font-medium text-sm transition">Sair</button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            <div class="space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-lg mb-1">Dados Lidos pela Rede Neural</h3>
-                    <p class="text-xs text-slate-500 mb-4">Evolução do seu comportamento financeiro nos últimos 4 anos.</p>
-                    <div class="h-48 w-full">
-                        <canvas id="graficoEvolucao"></canvas>
-                    </div>
+        <div class="w-full bg-white p-6 rounded-xl shadow-md mb-6">
+            <h3 class="text-xl font-bold text-slate-800 mb-4">Série Temporal Analisada pelo Motor Psicológico (120 Meses)</h3>
+            <div class="relative w-full" style="height: 400px;">
+                <canvas id="graficoHistorico"></canvas>
+            </div>
+        </div>
+
+        <div class="w-full bg-slate-900 p-6 rounded-xl shadow-md mb-6 text-white border-l-4 border-green-500">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h4 class="text-lg font-bold text-blue-400">Simulador de Estratégia e Orquestração</h4>
+                    <p class="text-sm text-slate-400">Selecione uma classificação abaixo para ver como a arquitetura de três motores reorganiza a carteira.</p>
                 </div>
+                <div>
+                    <select id="selectPerfilSimulado" onchange="alternarPerfilRecomendacao()" class="p-3 bg-slate-800 border border-slate-700 rounded-lg text-white font-medium outline-none focus:border-blue-500 cursor-pointer">
+                        <option value="">-- Simular Classificação Alternativa --</option>
+                        <option value="Conservador">Estratégia Conservadora (Foco: Dividend Yield)</option>
+                        <option value="Moderado">Estratégia Moderada (Foco: Return on Equity)</option>
+                        <option value="Audacioso">Estratégia Audaciosa (Foco: Revenue Growth)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-                <div class="bg-slate-900 p-6 rounded-xl shadow-lg border border-slate-700 text-white">
-                    <h3 class="font-bold text-lg mb-1 text-purple-400">⚡ Simulador da LSTM (Ao Vivo)</h3>
-                    <p class="text-xs text-slate-400 mb-4">Os seus dados atuais foram injetados abaixo. Altere-os para testar como a Inteligência Artificial muda de opinião.</p>
-                    
-                    <form id="formIA" class="space-y-3">
-                        <div class="grid grid-cols-4 gap-2 text-[10px] text-center text-slate-400 font-bold mb-1 uppercase tracking-wider">
-                            <div>Ano 1</div><div>Ano 2</div><div>Ano 3</div><div>Ano 4</div>
-                        </div>
-                        <div class="flex gap-2">
-                            <input type="number" id="r1" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700" title="Renda">
-                            <input type="number" id="r2" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700">
-                            <input type="number" id="r3" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700">
-                            <input type="number" id="r4" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-slate-700">
-                        </div>
-                        <div class="flex gap-2">
-                            <input type="number" id="p1" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400" title="Poupança">
-                            <input type="number" id="p2" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400">
-                            <input type="number" id="p3" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400">
-                            <input type="number" id="p4" class="w-full p-2 bg-slate-800 rounded text-xs text-center border border-green-900/50 text-green-400">
-                        </div>
-                        <button type="submit" class="w-full mt-2 bg-purple-600 hover:bg-purple-500 font-bold py-2 rounded text-sm transition">Re-processar Tensor Neural</button>
-                    </form>
-
-                    <div class="mt-6 pt-4 border-t border-slate-700">
-                        <h4 class="text-xs font-bold text-slate-400 mb-3">CONFIANÇA MATEMÁTICA (Softmax):</h4>
-                        <div class="space-y-3">
-                            <div>
-                                <div class="flex justify-between text-[10px] mb-1"><span>Audacioso</span><span id="pctAudacioso" class="font-bold">0%</span></div>
-                                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="barAudacioso" class="bg-red-500 h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-[10px] mb-1"><span>Moderado</span><span id="pctModerado" class="font-bold">0%</span></div>
-                                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="barModerado" class="bg-yellow-500 h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-[10px] mb-1"><span>Conservador</span><span id="pctConservador" class="font-bold">0%</span></div>
-                                <div class="w-full bg-slate-800 rounded-full h-1.5"><div id="barConservador" class="bg-blue-500 h-1.5 rounded-full transition-all duration-1000" style="width: 0%"></div></div>
-                            </div>
-                        </div>
+        <div class="w-full bg-white p-6 rounded-xl shadow-md">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-800">Portfólio de Alocação Sugerido</h3>
+                <div class="flex gap-4">
+                    <div class="bg-green-50 px-4 py-2 rounded border border-green-200">
+                        <span class="text-xs text-green-600 font-bold block uppercase">Capital Alocado</span>
+                        <span id="capitalInvestido" class="font-bold text-green-800 text-lg"></span>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-2 rounded border border-slate-200">
+                        <span class="text-xs text-slate-500 font-bold block uppercase">Reserva de Caixa (Troco)</span>
+                        <span id="capitalSobrando" class="font-bold text-slate-700 text-lg"></span>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="font-bold text-lg mb-1">Portfólio Quantitativo</h3>
-                        <p class="text-xs text-slate-500">Varredura na B3 alinhada ao seu perfil: <strong id="perfilCliente" class="uppercase text-blue-600"></strong></p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] uppercase font-bold text-slate-400">Capital Alocado</p>
-                        <p class="text-xl font-black text-green-600">R$ <span id="valorInvestido"></span></p>
-                    </div>
-                </div>
-
-                <div id="listaAlocacao" class="space-y-3">
-                    </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 text-sm uppercase tracking-wider">
+                            <th class="p-4 font-semibold rounded-tl-lg">Ativo (B3)</th>
+                            <th class="p-4 font-semibold">Preço Unitário</th>
+                            <th class="p-4 font-semibold">Quantidade</th>
+                            <th class="p-4 font-semibold">Total Alocado</th>
+                            <th class="p-4 font-semibold rounded-tr-lg">Justificativa do Motor Generativo (API)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaAlocacao" class="text-slate-800">
+                        </tbody>
+                </table>
             </div>
-
         </div>
     </div>
 
     <script>
         let meuGrafico = null; 
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnAcesso');
-            btn.innerText = "Autenticando & Extraindo Dados...";
+        function fazerLogin() {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const btn = document.querySelector('button');
+            
+            btn.innerText = "Consultando barramento de APIs...";
             btn.disabled = true;
 
-            const payload = {
-                email: document.getElementById('email').value,
-                senha: document.getElementById('senha').value
-            };
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.innerText = "Acessar Plataforma Neural";
+                btn.disabled = false;
 
-            try {
-                const resposta = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const dados = await resposta.json();
-
-                if(dados.status === 'sucesso') {
+                if (data.status === 'sucesso') {
                     document.getElementById('loginPage').classList.add('hidden');
                     document.getElementById('dashboardPage').classList.remove('hidden');
-                    document.getElementById('nomeCliente').innerText = dados.dados_cliente.nome;
-                    document.getElementById('perfilCliente').innerText = dados.dados_cliente.perfil_ia;
-                    document.getElementById('valorInvestido').innerText = dados.guia_de_investimento.capital_investido.toFixed(2);
-
-                    const historico = dados.dados_cliente.historico;
-
-                    desenharGrafico(historico);
-
-                    for(let i=0; i<4; i++) {
-                        document.getElementById(`r${i+1}`).value = historico[i][0];
-                        document.getElementById(`p${i+1}`).value = historico[i][1];
-                    }
-
-                    const lista = document.getElementById('listaAlocacao');
-                    lista.innerHTML = ''; 
-
-                    dados.guia_de_investimento.alocacao.forEach(item => {
-                        lista.innerHTML += `
-                            <div class="flex items-center justify-between bg-slate-50 p-4 rounded-lg border border-slate-200 border-l-4 border-l-blue-600 hover:shadow-md transition">
-                                <div class="flex-1 pr-4">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded">${item.ativo}</span>
-                                        <span class="text-[10px] font-semibold text-slate-500 uppercase">${item.categoria}</span>
-                                    </div>
-                                    <p class="text-xs text-slate-600 mt-2 mb-2 leading-relaxed">${item.motivo}</p>
-                                    <a href="${item.link}" target="_blank" class="text-blue-600 hover:text-blue-800 text-[11px] font-semibold underline transition">
-                                        Auditar dados no StatusInvest ↗
-                                    </a>
-                                </div>
-                                <div class="text-right ml-2 bg-white p-3 rounded shadow-sm border border-slate-100">
-                                    <div class="text-xl font-black text-slate-800">${item.quantidade} <span class="text-xs text-slate-400 font-normal">cotas</span></div>
-                                    <div class="text-xs font-bold text-green-600 mt-1">R$ ${item.total_gasto.toFixed(2)}</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    document.getElementById('formIA').dispatchEvent(new Event('submit'));
-
+                    
+                    document.getElementById('nomeCliente').innerText = data.dados_cliente.nome;
+                    document.getElementById('perfilIA').innerText = data.dados_cliente.perfil_ia;
+                    
+                    renderizarGrafico(data.dados_cliente.historico);
+                    atualizarTabelaEValores(data.guia_de_investimento);
+                    
+                    document.getElementById('selectPerfilSimulado').value = "";
                 } else {
-                    alert(dados.mensagem);
+                    alert(data.mensagem);
                 }
-            } catch (error) {
-                alert("Erro técnico (FrontEnd): " + error.message);
-                console.error("Stack trace completo do Erro:", error);
-            } finally {
-                btn.innerText = "Acessar Plataforma";
+            })
+            .catch(err => {
+                btn.innerText = "Acessar Plataforma Neural";
                 btn.disabled = false;
-            }
-        });
+                alert("Falha ao estabelecer conexão com o servidor.");
+            });
+        }
 
-        document.getElementById('formIA').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const matrizTemporal = [
-                [parseFloat(document.getElementById('r1').value), parseFloat(document.getElementById('p1').value)],
-                [parseFloat(document.getElementById('r2').value), parseFloat(document.getElementById('p2').value)],
-                [parseFloat(document.getElementById('r3').value), parseFloat(document.getElementById('p3').value)],
-                [parseFloat(document.getElementById('r4').value), parseFloat(document.getElementById('p4').value)]
-            ];
+        function renderizarGrafico(historico) {
+            const ctx = document.getElementById('graficoHistorico').getContext('2d');
+            const meses = Array.from({length: 120}, (_, i) => `Mês ${i+1}`);
+            const rendas = historico.map(h => h[0]);
+            const poupancas = historico.map(h => h[1]);
 
-            try {
-                const resposta = await fetch('/api/simular_ia', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ historico_4_anos: matrizTemporal })
-                });
-                const dados = await resposta.json();
-
-                if(dados.status === 'sucesso') {
-                    ['Audacioso', 'Moderado', 'Conservador'].forEach(perfil => {
-                        document.getElementById(`bar${perfil}`).style.width = dados.confianca_da_rede[perfil] + '%';
-                        document.getElementById(`pct${perfil}`).innerText = dados.confianca_da_rede[perfil] + '%';
-                    });
-                }
-            } catch (error) {
-                console.error("Erro na inferência ao vivo", error);
-            }
-        });
-
-        function desenharGrafico(historico) {
-            const ctx = document.getElementById('graficoEvolucao').getContext('2d');
-            
-            if(meuGrafico) meuGrafico.destroy();
-
-            const rendas = historico.map(ano => ano[0]);
-            const poupancas = historico.map(ano => ano[1]);
+            if (meuGrafico) meuGrafico.destroy(); 
 
             meuGrafico = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4'],
+                    labels: meses,
                     datasets: [
                         {
-                            label: 'Renda Acumulada',
+                            label: 'Renda Mensal (Eixo Esquerdo)',
                             data: rendas,
                             borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
                             borderWidth: 2,
                             fill: true,
-                            tension: 0.4
+                            tension: 0.2
                         },
                         {
-                            label: 'Poupança Salva',
+                            label: 'Proporção Poupada (Eixo Direito)',
                             data: poupancas,
                             borderColor: '#22c55e', 
                             borderWidth: 2,
-                            borderDash: [5, 5],
-                            tension: 0.4
+                            borderDash: [4, 4],
+                            tension: 0.2,
+                            yAxisID: 'y1' 
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 10} } } },
-                    scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'top' } },
+                    scales: {
+                        y: { 
+                            type: 'linear', display: true, position: 'left',
+                            title: { display: true, text: 'Renda Corrente (R$)' }
+                        },
+                        y1: {
+                            type: 'linear', display: true, position: 'right',
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Fator de Poupança (0.0 a 1.0)' }
+                        },
+                        x: { grid: { display: false } }
+                    }
                 }
+            });
+        }
+
+        function alternarPerfilRecomendacao() {
+            const perfilSelecionado = document.getElementById('selectPerfilSimulado').value;
+            if (!perfilSelecionado) return;
+
+            const emailLogado = document.getElementById('email').value;
+            const containerTabela = document.getElementById('listaAlocacao');
+            
+            containerTabela.innerHTML = `
+                <tr>
+                    <td colspan="5" class="p-8 text-center text-slate-500 font-medium animate-pulse border-b">
+                        <span class="block text-lg mb-2 text-blue-600 font-semibold">Consultando Mercado de Ações...</span>
+                        A varrer a B3 via Yahoo Finance e a coletar novas justificativas com o modelo de linguagem.
+                    </td>
+                </tr>
+            `;
+
+            fetch('/api/alterar_perfil_alocacao', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailLogado, perfil: perfilSelecionado })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'sucesso') {
+                    atualizarTabelaEValores(data.guia_de_investimento);
+                } else {
+                    alert("Erro operacional no servidor: " + data.mensagem);
+                }
+            })
+            .catch(error => console.error("Falha no transporte assíncrono dos dados:", error));
+        }
+
+        function atualizarTabelaEValores(guia) {
+            document.getElementById('capitalInvestido').innerText = `R$ ${guia.capital_investido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            document.getElementById('capitalSobrando').innerText = `R$ ${guia.capital_sobrando.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+            
+            const containerTabela = document.getElementById('listaAlocacao');
+            containerTabela.innerHTML = '';
+            
+            guia.alocacao.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-900">${item.ativo}</td>
+                    <td class="p-4">R$ ${item.preco_atual.toFixed(2)}</td>
+                    <td class="p-4">${item.quantidade} unidades</td>
+                    <td class="p-4 font-medium text-blue-700">R$ ${item.total_gasto.toFixed(2)}</td>
+                    <td class="p-4 text-sm text-slate-600 italic">"${item.motivo}"</td>
+                `;
+                containerTabela.appendChild(tr);
             });
         }
 
@@ -265,7 +257,6 @@
             document.getElementById('dashboardPage').classList.add('hidden');
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('senha').value = '';
-            document.getElementById('listaAlocacao').innerHTML = '';
         }
     </script>
 </body>
