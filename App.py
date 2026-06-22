@@ -11,33 +11,30 @@ import torch.nn.functional as F
 import os
 import numpy as np
 
-# ==============================================================================
-# CONFIGURAÇÃO DE INFRAESTRUTURA DE SERVIDOR
-# ==============================================================================
+# Configuração de infraestrutura do servidor
 app = Flask(__name__)
 CORS(app) 
 
 # Inicialização do cliente API para o ambiente generativo
-# CHAVE REMOVIDA PARA O GITHUB NÃO BLOQUEAR O PUSH
+# Chave removida para o GitHub não bloquear o push
 client = genai.Client(api_key="CHAVE AQUI")
 
-# ==============================================================================
-# MOTOR QUANTITATIVO (Filtros Financeiros e Integração de Ativos da B3)
-# ==============================================================================
+
+# Motor quantitativo: filtros financeiros e integração de ativos da B3
 def buscar_melhores_acoes(perfil):
     print("Iniciando varredura quantitativa via API Global (Yahoo Finance)...")
     
-    # POOL DE ATIVOS (Universo de Busca Restrito / Gestão de Riscos de Liquidez)
+    # Pool de ativos (universo de busca restrito e gestão de riscos de liquidez)
     pool_ativos = [
-            # Setor Elétrico / Saneamento / Seguros (Conservadores - Foco em DY)
-            'TAEE11.SA', 'EGIE3.SA', 'EQTL3.SA', 'TRPL4.SA', 'SBSP3.SA', # SBSP3 substituiu a CPLE6
+            # Setor elétrico, saneamento e seguros (conservadores - foco em dividend yield)
+            'TAEE11.SA', 'EGIE3.SA', 'EQTL3.SA', 'TRPL4.SA', 'SBSP3.SA', 
             'ENBR3.SA', 'BBSE3.SA', 'CXSE3.SA', 'SANB11.SA', 'CMIG4.SA',
             
-            # Bancos, Commodities e Grandes Corporações (Moderados - Foco em ROE)
+            # Bancos, commodities e grandes corporações (moderados - foco em ROE)
             'ITUB4.SA', 'BBAS3.SA', 'BBDC4.SA', 'PETR4.SA', 'VALE3.SA', 
             'SUZB3.SA', 'KLBN11.SA', 'ABEV3.SA', 'JBSS3.SA', 'B3SA3.SA',
             
-            # Tecnologia, Varejo, Saúde e Expansão (Audaciosos - Foco em Crescimento)
+            # Tecnologia, varejo, saúde e expansão (audaciosos - foco em crescimento)
             'WEGE3.SA', 'RADL3.SA', 'TOTS3.SA', 'RENT3.SA', 'VIVT3.SA', 
             'LREN3.SA', 'NTCO3.SA', 'HAPV3.SA', 'MGLU3.SA', 'PRIO3.SA'
     ]
@@ -58,28 +55,27 @@ def buscar_melhores_acoes(perfil):
             
     df = pd.DataFrame(metricas)
     
-    # ESTRATÉGIA DE CONTINGÊNCIA (Fallback de Segurança)
+    # Estratégia de contingência (fallback de segurança)
     if df.empty:
-        print("Aviso: Yahoo Finance não respondeu. Ativando Fallback de Segurança.")
+        print("Aviso: Yahoo Finance não respondeu. Ativando fallback de segurança.")
         return ['WEGE3', 'ITUB4', 'VALE3'], "Eficiência/Blue Chips (Fallback)"
     
-    # Filtro de Seleção Algorítmica com base na métrica chave de cada perfil
+    # Filtro de seleção algorítmica com base na métrica chave de cada perfil
     if perfil == "Conservador":
         top3 = df.sort_values('DY', ascending=False).head(3)
         categoria_base = "Dividendos"
     elif perfil == "Audacioso":
         top3 = df.sort_values('Crescimento', ascending=False).head(3)
         categoria_base = "Crescimento Acelerado"
-    else: # Moderado
+    else: 
         top3 = df.sort_values('ROE', ascending=False).head(3)
         categoria_base = "Eficiência/Blue Chips"
     
     tickers = top3['Papel'].tolist()
     return tickers, categoria_base
 
-# ==============================================================================
-# MOTOR GENERATIVO (Camada de Explicação Analítica Textual)
-# ==============================================================================
+
+# Motor generativo: camada de explicação analítica textual
 def gerar_motivos_dinamicos(perfil, tickers):
     print("Acionando a API para redação autônoma das teses de investimento...")
     nomes_ativos = ", ".join(tickers)
@@ -98,12 +94,11 @@ def gerar_motivos_dinamicos(perfil, tickers):
         texto_limpo = resposta.text.replace('```json', '').replace('```', '').strip()
         return json.loads(texto_limpo)
     except Exception as e:
-        print(f"Erro no Motor Generativo: {e}")
+        print(f"Erro no motor generativo: {e}")
         return {t: "Ativo selecionado pelo filtro quantitativo avançado." for t in tickers}
 
-# ==============================================================================
-# ALOCAÇÃO DE CAPITAL E PRECIFICAÇÃO REALISTA (Cálculo de Cotas Inteiras)
-# ==============================================================================
+
+# Alocação de capital e precificação realista (cálculo de cotas inteiras)
 def calcular_aporte_dinamico(tickers_limpos, motivos, categoria_base, capital_disponivel):
     ativos_processados = []
     dinheiro_sobrando = capital_disponivel
@@ -142,9 +137,8 @@ def calcular_aporte_dinamico(tickers_limpos, motivos, categoria_base, capital_di
 
     return ativos_processados, round(dinheiro_sobrando, 2)
 
-# ==============================================================================
-# MOTOR PSICOLÓGICO: REDE NEURAL RECORRENTE (PyTorch)
-# ==============================================================================
+
+# Motor psicológico: rede neural recorrente (PyTorch)
 class PerfilInvestidorLSTM(nn.Module):
     def __init__(self, input_size=2, hidden_size=64, num_layers=2, num_classes=3):
         super(PerfilInvestidorLSTM, self).__init__()
@@ -157,9 +151,8 @@ class PerfilInvestidorLSTM(nn.Module):
         out = self.dropout_fc(lstm_out[:, -1, :])
         return self.fc(out)
 
-# ==============================================================================
-# CARREGAMENTO DO MODELO E PARAMETRIZAÇÃO DE ESCALONAMENTO (Z-Score)
-# ==============================================================================
+
+# Carregamento do modelo e parametrização de escalonamento
 try:
     checkpoint = torch.load('lstm_guide.pth', map_location=torch.device('cpu'), weights_only=False)
     modelo_ia = PerfilInvestidorLSTM(input_size=2, hidden_size=checkpoint['hidden_size'], num_layers=2)
@@ -169,14 +162,13 @@ try:
     X_mean = checkpoint['X_mean']
     X_std = checkpoint['X_std']
     mapeamento_reverso = {int(k): v for k, v in checkpoint['mapeamento_reverso'].items()}
-    print("Pesos e parâmetros da Rede Neural carregados com sucesso!")
+    print("Pesos e parâmetros da rede neural carregados com sucesso!")
 except Exception as e:
     print(f"Erro crítico ao inicializar o arquivo de pesos .pth: {e}")
     modelo_ia = None
 
-# ==============================================================================
-# ROTAS DA INTERFACE E ENDPOINTS DA API
-# ==============================================================================
+
+# Rotas da interface e endpoints da API
 @app.route('/', methods=['GET'])
 def home():
     return render_template('index.html')
