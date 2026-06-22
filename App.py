@@ -19,7 +19,7 @@ CORS(app)
 
 # Inicialização do cliente API para o ambiente generativo
 # CHAVE REMOVIDA PARA O GITHUB NÃO BLOQUEAR O PUSH
-client = genai.Client(api_key="COLOQUE_SUA_CHAVE_AQUI_APENAS_NA_HORA_DE_RODAR")
+client = genai.Client(api_key="CHAVE AQUI")
 
 # ==============================================================================
 # MOTOR QUANTITATIVO (Filtros Financeiros e Integração de Ativos da B3)

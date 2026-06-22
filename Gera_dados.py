@@ -3,24 +3,22 @@ import torch.nn as nn
 import numpy as np
 import json
 
-# Definição da arquitetura para compatibilidade com o Checkpoint
+# Arquitetura LSTM compatível com o checkpoint
 class Guia_LSTM(nn.Module):
     def __init__(self, input_size, hidden_size, num_classes):
         super(Guia_LSTM, self).__init__()
-        # Se usar num_layers=2, o dropout interno da LSTM é ativado
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers=2, dropout=0.3, batch_first=True)
-        self.dropout_fc = nn.Dropout(0.4) # Desliga 40% das conexões antes da decisão final
+        self.dropout_fc = nn.Dropout(0.4)
         self.fc = nn.Linear(hidden_size, num_classes)
         
     def forward(self, x):
         lstm_out, _ = self.lstm(x)
-        # Pega o último passo temporal e aplica o dropout
         out = self.dropout_fc(lstm_out[:, -1, :])
         return self.fc(out)
 
 print("A iniciar o Processamento em Lote (Batch) da IA...")
 
-# Carregando os metadados do treinamento
+# Carregar checkpoint e preparar modelo e normalizadores
 checkpoint = torch.load('lstm_guide.pth', map_location=torch.device('cpu'), weights_only=False)
 modelo = Guia_LSTM(2, checkpoint['hidden_size'], 3)
 modelo.load_state_dict(checkpoint['model_state_dict'])
@@ -30,10 +28,9 @@ X_mean = checkpoint['X_mean']
 X_std = checkpoint['X_std']
 mapeamento = checkpoint['mapeamento_reverso']
 
-# Fixando seed local para estabilidade dos dados dos clientes de teste
+# Gerar históricos sintéticos de 120 meses para clientes de teste
 np.random.seed(42)
 
-# Gerando históricos complexos de 120 meses para simulação em produção
 historico_joao = []
 renda_j = 4000
 for m in range(120):
@@ -75,9 +72,9 @@ clientes_artificiais = [
 
 banco_de_dados = {}
 
+# Classificar históricos com o modelo e gerar arquivo `usuarios.json`
 with torch.no_grad():
     for cliente in clientes_artificiais:
-        # Formata o histórico individual para a dimensão (1, 120, 2) esperada pela LSTM
         hist_np = np.array([cliente['historico']])
         hist_scaled = (hist_np - X_mean) / X_std
         tensor = torch.FloatTensor(hist_scaled)

@@ -9,6 +9,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
+    <!-- Login: formulário de autenticação do usuário -->
     <div id="loginPage" class="min-h-screen flex items-center justify-center p-6">
         <div class="max-w-md w-full bg-slate-900 rounded-xl shadow-2xl p-8 text-white">
             <h2 class="text-3xl font-bold mb-2 text-center text-blue-500">Buffet Brain</h2>
@@ -30,6 +31,7 @@
         </div>
     </div>
 
+    <!-- Dashboard: visão geral do investidor e controles de simulação -->
     <div id="dashboardPage" class="hidden min-h-screen p-6 max-w-7xl mx-auto">
         
         <header class="flex flex-col md:flex-row items-center justify-between bg-white p-6 rounded-xl shadow-sm mb-6 border-l-4 border-blue-500">
@@ -46,6 +48,7 @@
             </div>
         </header>
 
+        <!-- Gráfico temporal analisado pela LSTM -->
         <div class="w-full bg-white p-6 rounded-xl shadow-md mb-6">
             <h3 class="text-xl font-bold text-slate-800 mb-4">Série Temporal Analisada pelo Motor Psicológico (120 Meses)</h3>
             <div class="relative w-full" style="height: 400px;">
@@ -53,6 +56,7 @@
             </div>
         </div>
 
+        <!-- Simulador e seletor de perfil -->
         <div class="w-full bg-slate-900 p-6 rounded-xl shadow-md mb-6 text-white border-l-4 border-green-500">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
@@ -70,6 +74,7 @@
             </div>
         </div>
 
+        <!-- Tabela de alocação sugerida pelo motor -->
         <div class="w-full bg-white p-6 rounded-xl shadow-md">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-slate-800">Portfólio de Alocação Sugerido</h3>
@@ -103,6 +108,7 @@
         </div>
     </div>
 
+    <!-- Scripts: autenticação, visualização e atualização da UI -->
     <script>
         let meuGrafico = null; 
 
